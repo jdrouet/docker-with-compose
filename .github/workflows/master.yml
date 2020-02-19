@@ -1,0 +1,35 @@
+name: build and push image
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    # every 2 days at 2am
+    - cron: '0 2 */2 * *'
+
+jobs:
+  build-image:
+    name: build images and push
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        version:
+          - "latest"
+          - "stable"
+          - "19"
+          - "19.03"
+          - "19.03.6"
+
+    steps:
+      - name: login to docker hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: build and push
+        run: make build push
+        env:
+          IMAGE_TAG: ${{ matrix.version }}

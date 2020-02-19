@@ -1,0 +1,29 @@
+name: build and push image
+
+on:
+  push:
+    branch:
+      - '!master'
+
+jobs:
+  build-image:
+    name: build images 
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        version:
+          - "latest"
+          - "stable"
+          - "19"
+          - "19.03"
+          - "19.03.6"
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: build
+        run: make build
+        env:
+          IMAGE_TAG: ${{ matrix.version }}
