@@ -1,0 +1,19 @@
+language: bash
+
+env:
+  - DOCKER_VERSION=latest
+  - DOCKER_VERSION=test
+  - DOCKER_VERSION=stable
+  - DOCKER_VERSION=19.03
+
+services:
+  - docker
+
+branches:
+  only:
+    - master
+
+script:
+  - docker build --build-arg DOCKER_VERSION=$DOCKER_VERSION -t jdrouet/docker-with-compose:$DOCKER_VERSION .
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker push jdrouet/docker-with-compose:$DOCKER_VERSION
